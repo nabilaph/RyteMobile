@@ -79,32 +79,33 @@ public class Login extends AppCompatActivity {
             public void onClick(View view) {
                 String mail =  email.getEditText().getText().toString().trim();
                 String password =  pass.getEditText().getText().toString().trim();
-//                SharedPreferences.Editor editor = sp.edit();
-//                editor.putString("isDetail", "Home");
-//                editor.commit();
 
-                mAuth.signInWithEmailAndPassword(mail, password)
-                        .addOnCompleteListener(Login.this, new OnCompleteListener<AuthResult>() {
-                            @Override
-                            public void onComplete(@NonNull Task<AuthResult> task) {
-                                if (task.isSuccessful()) {
-                                    // Sign in success, update UI with the signed-in user's information
-                                    Log.d(TAG, "signInWithEmail:success");
-                                    FirebaseUser user = mAuth.getCurrentUser();
-                                    Toast.makeText(Login.this, "Login Successful", Toast.LENGTH_SHORT) .show();
-                                    startActivity(new Intent(Login.this, Dashboard.class));
-                                    //updateUI(user);
-                                } else {
-                                    // If sign in fails, display a message to the user.
-                                    Log.w(TAG, "signInWithEmail:failure", task.getException());
-                                    Toast.makeText(Login.this, "Authentication failed.",
-                                            Toast.LENGTH_SHORT).show();
-                                    //updateUI(null);
+                if(!validateEmail() | !validatePassword()){
+                    mAuth.signInWithEmailAndPassword(mail, password)
+                            .addOnCompleteListener(Login.this, new OnCompleteListener<AuthResult>() {
+                                @Override
+                                public void onComplete(@NonNull Task<AuthResult> task) {
+                                    if (task.isSuccessful()) {
+                                        // Sign in success, update UI with the signed-in user's information
+                                        Log.d(TAG, "signInWithEmail:success");
+                                        FirebaseUser user = mAuth.getCurrentUser();
+                                        Toast.makeText(Login.this, "Login Successful", Toast.LENGTH_SHORT) .show();
+                                        startActivity(new Intent(Login.this, Dashboard.class));
+                                        //updateUI(user);
+                                    } else {
+                                        // If sign in fails, display a message to the user.
+                                        Log.w(TAG, "signInWithEmail:failure", task.getException());
+                                        Toast.makeText(Login.this, "Authentication failed.",
+                                                Toast.LENGTH_SHORT).show();
+                                        //updateUI(null);
+                                    }
+
+                                    // ...
                                 }
+                            });
+                }
 
-                                // ...
-                            }
-                        });
+
 
 
             }
@@ -129,9 +130,16 @@ public class Login extends AppCompatActivity {
     private Boolean validatePassword(){
         String val = pass.getEditText().getText().toString();
         Boolean boolVal = false;
+        String noWhiteSpace = "\\A\\w{4,20}\\z";
 
         if(val.isEmpty()){
             pass.setError("Field cannot be empty!");
+        }else if(val.length() >= 15){
+            pass.setError("Password cannot be more than 15 characters!");
+        }else if(val.length() <= 8){
+            pass.setError("Username cannot be less than 8 characters!");
+        }else if(!val.matches(noWhiteSpace)){
+            pass.setError("White space are not allowed!");
         }else{
             pass.setError(null);
             pass.setErrorEnabled(false);
@@ -141,11 +149,4 @@ public class Login extends AppCompatActivity {
         return boolVal;
     }
 
-    public void registerUser (View view){
-        if(!validateUsername() | !validatePassword()){
-            return;
-        }else{
-            isUser();
-        }
-    }
 }

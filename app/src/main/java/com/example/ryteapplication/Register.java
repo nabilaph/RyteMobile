@@ -4,13 +4,13 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.example.ryteapplication.HelperClass.UserHelperClass;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputLayout;
@@ -29,6 +29,7 @@ public class Register extends AppCompatActivity {
     TextInputLayout fullname, email, username, pass;
 
     private FirebaseAuth mAuth;
+    private DatabaseReference usersRef;
 
     @Override
     public void onStart() {
@@ -36,19 +37,7 @@ public class Register extends AppCompatActivity {
         // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser user = mAuth.getInstance().getCurrentUser();
         if (user != null) {
-            // Name, email address, and profile photo Url
-            String name = user.getDisplayName();
             String email = user.getEmail();
-            Uri photoUrl = user.getPhotoUrl();
-
-            // Check if user's email is verified
-            //boolean emailVerified = user.isEmailVerified();
-
-            // The user's ID, unique to the Firebase project. Do NOT use this value to
-            // authenticate with your backend server, if you have one. Use
-            // FirebaseUser.getIdToken() instead.
-            String uid = user.getUid();
-
             Toast.makeText(Register.this, "Hello "+ email, Toast.LENGTH_SHORT) .show();
         }else{
             Toast.makeText(Register.this, "No Active user", Toast.LENGTH_SHORT) .show();
@@ -89,31 +78,37 @@ public class Register extends AppCompatActivity {
                 String user =  username.getEditText().getText().toString().trim();
                 String password =  pass.getEditText().getText().toString().trim();
 
-                mAuth.createUserWithEmailAndPassword(mail, password)
-                        .addOnCompleteListener(Register.this, new OnCompleteListener<AuthResult>() {
-                            @Override
-                            public void onComplete(@NonNull Task<AuthResult> task) {
-                                if (task.isSuccessful()) {
-                                    // Sign in success, update UI with the signed-in user's information
-                                    Log.d(TAG, "createUserWithEmail:success");
-                                    FirebaseUser user = mAuth.getCurrentUser();
-                                    Toast.makeText(Register.this, "Register successful", Toast.LENGTH_SHORT).show();
+                if(!validateUsername() | !validatePassword() | !validateEmail() | !validateFullname() ){
+                    mAuth.createUserWithEmailAndPassword(mail, password)
+                            .addOnCompleteListener(Register.this, new OnCompleteListener<AuthResult>() {
+                                @Override
+                                public void onComplete(@NonNull Task<AuthResult> task) {
+                                    if (task.isSuccessful()) {
+                                        // Sign in success, update UI with the signed-in user's information
+                                        Log.d(TAG, "createUserWithEmail:success");
+                                        FirebaseUser currentUser = mAuth.getCurrentUser();
+                                        storeUserData(currentUser,full_name, user, password, mail);
 
-                                    //change page from register to login page
-                                    Intent i = new Intent( Register.this, Login.class);
-                                    startActivity(i);
-                                    //updateUI(user);
-                                } else {
-                                    // If sign in fails, display a message to the user.
-                                    Log.w(TAG, "createUserWithEmail:failure", task.getException());
-                                    Toast.makeText(Register.this, "Authentication failed.",
-                                            Toast.LENGTH_SHORT).show();
-                                    //updateUI(null);
+                                        Toast.makeText(Register.this, "Register successful", Toast.LENGTH_SHORT).show();
+
+                                        //change page from register to login page
+                                        Intent i = new Intent( Register.this, Login.class);
+                                        startActivity(i);
+                                        //updateUI(user);
+                                    } else {
+                                        // If sign in fails, display a message to the user.
+                                        Log.w(TAG, "createUserWithEmail:failure", task.getException());
+                                        Toast.makeText(Register.this, "Authentication failed.",
+                                                Toast.LENGTH_SHORT).show();
+                                        //updateUI(null);
+                                    }
+
+                                    // ...
                                 }
+                            });
+                }
 
-                                // ...
-                            }
-                        });
+
 
 
             }
@@ -135,6 +130,21 @@ public class Register extends AppCompatActivity {
         return boolVal;
     }
 
+    private Boolean validateFullname(){
+        String val = fullname.getEditText().getText().toString();
+        Boolean boolVal = false;
+
+        if(val.isEmpty()){
+            fullname.setError("Field cannot be empty!");
+        }else{
+            fullname.setError(null);
+            fullname.setErrorEnabled(false);
+            boolVal = true;
+        }
+
+        return boolVal;
+    }
+
     private Boolean validateUsername(){
         String val = username.getEditText().getText().toString();
         String noWhiteSpace = "\\A\\w{4,20}\\z";
@@ -145,7 +155,7 @@ public class Register extends AppCompatActivity {
         }else if(val.length() >= 15){
             username.setError("Username too long!");
         }else if(!val.matches(noWhiteSpace)){
-            username.setError("white space are not allowed!");
+            username.setError("White space are not allowed!");
         }else{
             username.setError(null);
             username.setErrorEnabled(false);
@@ -158,9 +168,16 @@ public class Register extends AppCompatActivity {
     private Boolean validatePassword(){
         String val = pass.getEditText().getText().toString();
         Boolean boolVal = false;
+        String noWhiteSpace = "\\A\\w{4,20}\\z";
 
         if(val.isEmpty()){
             pass.setError("Field cannot be empty!");
+        }else if(val.length() >= 15){
+            pass.setError("Password cannot be more than 15 characters!");
+        }else if(val.length() <= 8){
+            pass.setError("Username cannot be less than 8 characters!");
+        }else if(!val.matches(noWhiteSpace)){
+            pass.setError("White space are not allowed!");
         }else{
             pass.setError(null);
             pass.setErrorEnabled(false);
@@ -170,20 +187,14 @@ public class Register extends AppCompatActivity {
         return boolVal;
     }
 
-    public void registerUser (View view){
-        if(!validateUsername() | !validatePassword()){
-            return;
-        }else{
-            isUser();
-        }
+    void storeUserData(FirebaseUser user, String fullname, String username, String password, String email){
+        String uid = user.getUid();
+
+        usersRef = FirebaseDatabase.getInstance().getReference("users");
+
+        UserHelperClass helper = new UserHelperClass(email, fullname, password, uid, username);
+
+        usersRef.child(uid).setValue(helper);
+
     }
-
-    private void isUser() {
-
-        String userEnteredUsername = username.getEditText().getText().toString();
-        String userEnteredPassword = pass.getEditText().getText().toString();
-
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("users");
-    }
-
 }

@@ -23,6 +23,12 @@ import com.example.ryteapplication.UpdateProfile;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
@@ -88,6 +94,7 @@ public class ProfileFragment extends Fragment {
         myFragment = inflater.inflate(R.layout.fragment_profile, container, false);
 
         mAuth = FirebaseAuth.getInstance();
+        FirebaseUser currentUser = mAuth.getCurrentUser();
 
         // find components by id according to the defined variable
         fullname = myFragment.findViewById(R.id.fullname);
@@ -96,15 +103,12 @@ public class ProfileFragment extends Fragment {
         password = myFragment.findViewById(R.id.password);
         bigFullname = myFragment.findViewById(R.id.bigFullname);
 
-        //get shared preferences
-        sp = getContext().getSharedPreferences(SP_NAME, MODE_PRIVATE);
-
-        //check availability of sp
-        final String name = sp.getString(KEY_UNAME, null);
-
 
         // find components by id according to the defined variable
         updateProfile = myFragment.findViewById(R.id.btn_update);
+        logOut = myFragment.findViewById(R.id.btn_logout);
+
+        showUserData(currentUser);
 
         //set on click listener for update profile button
         updateProfile.setOnClickListener(new View.OnClickListener() {
@@ -116,16 +120,11 @@ public class ProfileFragment extends Fragment {
             }
         });
 
-        // find components by id according to the defined variable
-        logOut = myFragment.findViewById(R.id.btn_logout);
 
         //set on click listener for logout button
         logOut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                SharedPreferences.Editor editor = sp.edit();
-//                editor.clear();
-//                editor.commit();
                 FirebaseAuth.getInstance().signOut();
 
                 //make toast for displays a text that has successfully logged out
@@ -137,5 +136,33 @@ public class ProfileFragment extends Fragment {
         });
 
         return myFragment;
+    }
+
+    private void showUserData(FirebaseUser user){
+        String userid = user.getUid();
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("users");
+        Query userData = ref.orderByChild(userid);
+
+        userData.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                String emailFromDB = snapshot.child(userid).child("email").getValue(String.class);
+                String fullnameFromDB = snapshot.child(userid).child("fullname").getValue(String.class);
+                String passwordFromDB = snapshot.child(userid).child("password").getValue(String.class);
+                String useridFromDB = snapshot.child(userid).child("userid").getValue(String.class);
+                String usernameFromDB = snapshot.child(userid).child("username").getValue(String.class);
+
+                fullname.getEditText().setText(fullnameFromDB);
+                username.getEditText().setText(usernameFromDB);
+                password.getEditText().setText(passwordFromDB);
+                email.getEditText().setText(emailFromDB);
+                bigFullname.setText(fullnameFromDB);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
     }
 }
