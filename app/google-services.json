@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "501953310801",
+    "firebase_url": "https://ryteproject2506-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "ryteproject2506",
+    "storage_bucket": "ryteproject2506.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:501953310801:android:0bcc6b2b41e5a8267bc870",
+        "android_client_info": {
+          "package_name": "com.example.ryteapplication"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "501953310801-k1n602b4tnvfe1hr45od22p0guuee3co.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.ryteapplication",
+            "certificate_hash": "9ea6a04ff2cb86b5fca346ce382a043f75a4a248"
+          }
+        },
+        {
+          "client_id": "501953310801-4s84ub41sauh4rqa23jlimmdt5b52d7c.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBhMD4QWYr81cena_XjjHo9KWZpX8r3o3g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "501953310801-4s84ub41sauh4rqa23jlimmdt5b52d7c.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

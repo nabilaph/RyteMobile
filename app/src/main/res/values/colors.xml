@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="RDarkBlue">#003049</color>
+    <color name="RRed">#d62828</color>
+    <color name="ROrange">#f77f00</color>
+    <color name="RSunColor">#fcbf49</color>
+    <color name="RCream">#eae2b7</color>
+    <color name="kGreyColor">#706A6A</color>
+    <color name="kRedGoogleButton">#EB5757</color>
+</resources>

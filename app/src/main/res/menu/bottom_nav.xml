@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+
+    <item
+        android:title="My Stories"
+        android:icon="@drawable/ic_chat"
+        android:id="@+id/nav_feed"
+        app:cnb_backgroundColor="@color/RSunColor"
+        app:cnb_iconColor="#ffffff"
+        />
+
+    <item
+        android:title="Public Stories"
+        android:icon="@drawable/ic_opinion"
+        android:id="@+id/nav_home"
+        app:cnb_backgroundColor="@color/RSunColor"
+        app:cnb_iconColor="#ffffff"/>
+
+    <item
+        android:title="Profile"
+        android:icon="@drawable/ic_user"
+        android:id="@+id/nav_profile"
+        app:cnb_backgroundColor="@color/RSunColor"
+        app:cnb_iconColor="#ffffff" />
+</menu>
