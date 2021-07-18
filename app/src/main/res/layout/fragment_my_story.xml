@@ -15,6 +15,8 @@
         android:id="@+id/noStories"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:fontFamily="@font/poppins"
+        android:textColor="#000000"
         android:text="No Stories Here..."
         android:textSize="18sp"
         android:background="@drawable/rv_shape"

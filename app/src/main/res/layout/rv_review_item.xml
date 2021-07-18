@@ -4,11 +4,13 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:id="@+id/rv_item_linearLayout"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:backgroundTint="@color/RSunColor">
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:backgroundTint="@color/RSunColor"
         >
 
     <LinearLayout

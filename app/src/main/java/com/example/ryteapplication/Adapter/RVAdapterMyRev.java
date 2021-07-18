@@ -14,6 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.ryteapplication.HelperClass.StoryHelperClass;
 import com.example.ryteapplication.R;
 
 import java.util.ArrayList;
@@ -24,18 +25,11 @@ public class RVAdapterMyRev extends RecyclerView.Adapter<RVAdapterMyRev.RVviewHo
 
     //define variables
     private Context context;
-    private ArrayList<String> like_count, story_detail, story_date, username;
+    ArrayList <StoryHelperClass> listStory;
 
-
-    //constructor
-    public RVAdapterMyRev(Context context, ArrayList like_count, ArrayList story_detail,
-                          ArrayList story_date, ArrayList username){
+    public RVAdapterMyRev(Context context, ArrayList<StoryHelperClass> listStory) {
         this.context = context;
-        this.like_count = like_count;
-        this.story_date = story_date;
-        this.story_detail = story_detail;
-        this.username = username;
-
+        this.listStory = listStory;
     }
 
     @NonNull
@@ -49,12 +43,12 @@ public class RVAdapterMyRev extends RecyclerView.Adapter<RVAdapterMyRev.RVviewHo
     @Override
     public void onBindViewHolder(@NonNull final RVviewHolder holder, final int position) {
 
-        //set text for review layout
-        holder.txt_likeCount.setText(String.valueOf(like_count.get(position)));
-        holder.txt_storyDate.setText(String.valueOf(story_date.get(position)));
-        holder.txt_storyDet.setText(String.valueOf(story_detail.get(position)));
-        holder.txt_username.setText(String.valueOf(username.get(position)));
-
+        StoryHelperClass helper= listStory.get(position);
+        //set text
+        holder.txt_likeCount.setText(Integer.toString(helper.getLikesCount()));
+        holder.txt_storyDate.setText(helper.getDate());
+        holder.txt_storyDet.setText(helper.getStoryContent());
+        holder.txt_username.setText(helper.getUsername());
 
         // set on click listener for delete button
         holder.delete_btn.setOnClickListener(new View.OnClickListener() {
@@ -80,10 +74,10 @@ public class RVAdapterMyRev extends RecyclerView.Adapter<RVAdapterMyRev.RVviewHo
                             Toast.makeText(v.getContext(), "This post has been successfully deleted", Toast.LENGTH_SHORT).show();
 
                             //remove data from array list
-                            like_count.remove(position);
-                            story_date.remove(position);
-                            story_detail.remove(position);
-                            username.remove(position);
+                            //like_count.remove(position);
+                            //story_date.remove(position);
+//                            story_detail.remove(position);
+//                            username.remove(position);
                             notifyDataSetChanged();
                         }
                     }
@@ -110,7 +104,7 @@ public class RVAdapterMyRev extends RecyclerView.Adapter<RVAdapterMyRev.RVviewHo
 
     @Override
     public int getItemCount() {
-        return username.size();
+        return listStory.size();
     }
 
     public class RVviewHolder extends RecyclerView.ViewHolder{
@@ -118,15 +112,9 @@ public class RVAdapterMyRev extends RecyclerView.Adapter<RVAdapterMyRev.RVviewHo
         //define variables
         TextView txt_likeCount,txt_storyDet, txt_storyDate, txt_username;
         ImageView like_btn, delete_btn;
-        String SP_NAME = "mypref";
-        SharedPreferences sp;
-
 
         public RVviewHolder(@NonNull final View itemView) {
             super(itemView);
-
-            //get shared preferences
-            sp = itemView.getContext().getSharedPreferences(SP_NAME, MODE_PRIVATE);
 
             // find components by id according to the defined variable
             txt_likeCount = itemView.findViewById(R.id.text_likeCount);

@@ -1,7 +1,6 @@
 package com.example.ryteapplication.Adapter;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +10,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.ryteapplication.HelperClass.StoryHelperClass;
 import com.example.ryteapplication.R;
 
 import java.util.ArrayList;
@@ -20,16 +20,11 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.RVviewHolder> {
 
     //define variables
     public  Context context;
-    public ArrayList like_count, story_detail, story_date, username;
+    ArrayList <StoryHelperClass> listStory;
 
-    //constructor
-    public RVAdapter(Context context, ArrayList like_count, ArrayList story_detail,
-                     ArrayList story_date, ArrayList username){
+    public RVAdapter(Context context, ArrayList<StoryHelperClass> listStory) {
         this.context = context;
-        this.like_count = like_count;
-        this.story_date = story_date;
-        this.story_detail = story_detail;
-        this.username = username;
+        this.listStory = listStory;
     }
 
     public class RVviewHolder extends RecyclerView.ViewHolder{
@@ -37,8 +32,6 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.RVviewHolder> {
         //define variables
         TextView txt_likeCount,txt_storyDet, txt_storyDate, txt_username;
         ImageView like_btn;
-        String SP_NAME = "mypref";
-        SharedPreferences sp;
 
         public RVviewHolder(@NonNull View itemView) {
             super(itemView);
@@ -66,12 +59,12 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.RVviewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull final RVviewHolder holder, int position) {
-
+        StoryHelperClass helper= listStory.get(position);
         //set text
-        holder.txt_likeCount.setText(String.valueOf(like_count.get(position)));
-        holder.txt_storyDate.setText(String.valueOf(story_date.get(position)));
-        holder.txt_storyDet.setText(String.valueOf(story_detail.get(position)));
-        holder.txt_username.setText(String.valueOf(username.get(position)));
+        holder.txt_likeCount.setText(Integer.toString(helper.getLikesCount()));
+        holder.txt_storyDate.setText(helper.getDate());
+        holder.txt_storyDet.setText(helper.getStoryContent());
+        holder.txt_username.setText(helper.getUsername());
 
         holder.like_btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -85,7 +78,7 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.RVviewHolder> {
 
     @Override
     public int getItemCount() {
-        return username.size();
+        return listStory.size();
     }
 
 

@@ -38,18 +38,16 @@ public class ProfileFragment extends Fragment {
 
     // define variables
     TextInputLayout fullname, username, password, email;
-    TextView bigFullname;
+    TextView bigFullname, likesCount, storiesCount;
     Button updateProfile, logOut;
     SwipeRefreshLayout swipeRefresh;
+
+    int likesTotal = 0;
 
     Context context;
     View myFragment;
 
     SharedPreferences sp;
-
-    // define the name of shared preferences and key
-    String SP_NAME = "mypref";
-    String KEY_UNAME = "username";
 
     //make array list for user data
     ArrayList<String> userData = new ArrayList();
@@ -102,13 +100,15 @@ public class ProfileFragment extends Fragment {
         email = myFragment.findViewById(R.id.email);
         password = myFragment.findViewById(R.id.password);
         bigFullname = myFragment.findViewById(R.id.bigFullname);
-
+        likesCount = myFragment.findViewById(R.id.likesCount);
+        storiesCount = myFragment.findViewById(R.id.storiesCount);
 
         // find components by id according to the defined variable
         updateProfile = myFragment.findViewById(R.id.btn_update);
         logOut = myFragment.findViewById(R.id.btn_logout);
 
         showUserData(currentUser);
+        showInsight(currentUser);
 
         //set on click listener for update profile button
         updateProfile.setOnClickListener(new View.OnClickListener() {
@@ -165,4 +165,54 @@ public class ProfileFragment extends Fragment {
             }
         });
     }
+
+    private void showInsight(FirebaseUser user){
+        String userid = user.getUid();
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("insight");
+        Query userData = ref.orderByChild(userid);
+
+        userData.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                int likesCountFromDB = snapshot.child(userid).child("likesCount").getValue(Integer.class);
+                int storiesCountFromDB = snapshot.child(userid).child("storiesCount").getValue(Integer.class);
+
+                likesCount.setText(Integer.toString(likesCountFromDB));
+                storiesCount.setText(Integer.toString(storiesCountFromDB));
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
+    void countInsight(FirebaseUser user){
+        String userid = user.getUid();
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("stories");
+        Query userData = ref.orderByChild(userid);
+        //int likesTotal = 0;
+
+        userData.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                int storiesCount = (int) snapshot.getChildrenCount();
+                DatabaseReference insightRef = FirebaseDatabase.getInstance().getReference("insight");
+                insightRef.child(userid).child("storiesCount").setValue(storiesCount);
+
+                String keyStory = snapshot.getKey();
+                int likesCount = snapshot.child(keyStory).child("likesCount").getValue(Integer.class);
+                likesTotal = likesTotal + likesCount;
+                insightRef.child("likesCount").setValue(likesTotal);
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
 }

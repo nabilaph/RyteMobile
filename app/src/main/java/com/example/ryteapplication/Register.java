@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.example.ryteapplication.HelperClass.InsightHelperClass;
 import com.example.ryteapplication.HelperClass.UserHelperClass;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -30,6 +31,7 @@ public class Register extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
     private DatabaseReference usersRef;
+    private DatabaseReference insightRef;
 
     @Override
     public void onStart() {
@@ -78,7 +80,7 @@ public class Register extends AppCompatActivity {
                 String user =  username.getEditText().getText().toString().trim();
                 String password =  pass.getEditText().getText().toString().trim();
 
-                if(!validateUsername() | !validatePassword() | !validateEmail() | !validateFullname() ){
+                if(validateUsername() & validatePassword() & validateEmail() & validateFullname() ){
                     mAuth.createUserWithEmailAndPassword(mail, password)
                             .addOnCompleteListener(Register.this, new OnCompleteListener<AuthResult>() {
                                 @Override
@@ -87,6 +89,7 @@ public class Register extends AppCompatActivity {
                                         // Sign in success, update UI with the signed-in user's information
                                         Log.d(TAG, "createUserWithEmail:success");
                                         FirebaseUser currentUser = mAuth.getCurrentUser();
+                                        addInsightCount(currentUser);
                                         storeUserData(currentUser,full_name, user, password, mail);
 
                                         Toast.makeText(Register.this, "Register successful", Toast.LENGTH_SHORT).show();
@@ -197,4 +200,17 @@ public class Register extends AppCompatActivity {
         usersRef.child(uid).setValue(helper);
 
     }
+
+    void addInsightCount(FirebaseUser user){
+        String uid = user.getUid();
+        int likesCount = 0;
+        int storiesCount = 0;
+
+        insightRef = FirebaseDatabase.getInstance().getReference("insight");
+
+        InsightHelperClass helper = new InsightHelperClass(likesCount, storiesCount, uid);
+
+        insightRef.child(uid).setValue(helper);
+    }
+
 }

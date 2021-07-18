@@ -1,9 +1,9 @@
 package com.example.ryteapplication.nav_fragment;
 
-import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -11,9 +11,21 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.example.ryteapplication.Adapter.RVAdapterMyRev;
+import com.example.ryteapplication.HelperClass.StoryHelperClass;
 import com.example.ryteapplication.R;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
@@ -24,21 +36,21 @@ public class MyStoryFragment extends Fragment {
     RecyclerView RV_myRev;
     RVAdapterMyRev adapter;
 
-    ArrayList<String> like_count, story_detail, story_date, username;
+    TextView noStoriesLabel;
+
+    ArrayList<StoryHelperClass> listStory;
 
     View myFragment;
 
-    SharedPreferences sp;
-
-    // define the name of shared preferences and key
-    String SP_NAME = "mypref";
+    private DatabaseReference database;
+    private FirebaseAuth mAuth;
 
     public MyStoryFragment() {
         // Required empty public constructor
     }
 
     public static MyStoryFragment getInstance() {
-         return new MyStoryFragment();
+        return new MyStoryFragment();
     }
 
     @Override
@@ -46,27 +58,41 @@ public class MyStoryFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         myFragment = inflater.inflate(R.layout.fragment_my_story, container, false);
-
+        mAuth = FirebaseAuth.getInstance();
+        FirebaseUser currentUser = mAuth.getCurrentUser();
         RV_myRev = myFragment.findViewById(R.id.rv_mystory);
 
-        //get shared preferences
-        sp = getContext().getSharedPreferences(SP_NAME, MODE_PRIVATE);
+        noStoriesLabel = myFragment.findViewById(R.id.noStories);
 
-        //array list for display review
-        like_count = new ArrayList<>();
-        story_detail = new ArrayList<>();
-        username = new ArrayList<>();
-        story_date = new ArrayList<>();
+        listStory = new ArrayList<>();
+        database = FirebaseDatabase.getInstance().getReference("stories");
+        Query storyData = database.orderByChild("userid").equalTo(currentUser.getUid());
 
-        //harus di store dulu value nya ke array
-        //storeDataInArray();
-
-        adapter = new RVAdapterMyRev(getContext(),like_count, story_detail, story_date, username);
+        adapter = new RVAdapterMyRev(getContext(), listStory);
         RV_myRev.setAdapter(adapter);
         RV_myRev.setLayoutManager(new LinearLayoutManager(getContext()));
-
+        displayData(storyData);
 
         return myFragment;
+    }
+
+    void displayData(Query storyData) {
+        storyData.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    StoryHelperClass helper = dataSnapshot.getValue(StoryHelperClass.class);
+                    listStory.add(helper);
+                }
+                adapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(@NonNull @NotNull DatabaseError error) {
+
+            }
+        }
+        );
     }
 
     @Override

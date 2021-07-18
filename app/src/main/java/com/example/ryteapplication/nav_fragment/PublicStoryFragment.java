@@ -1,9 +1,9 @@
 package com.example.ryteapplication.nav_fragment;
 
-import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -11,9 +11,18 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.example.ryteapplication.Adapter.RVAdapter;
+import com.example.ryteapplication.HelperClass.StoryHelperClass;
 import com.example.ryteapplication.R;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
@@ -23,15 +32,12 @@ public class PublicStoryFragment extends Fragment {
 
     RecyclerView RV_publicRev;
     RVAdapter adapter;
+    TextView noStoriesLabel;
 
     ArrayList<String> like_count, story_detail, story_date, username;
-
+    ArrayList <StoryHelperClass> listStory;
+    DatabaseReference database;
     View myFragment;
-
-    SharedPreferences sp;
-
-    // define the name of shared preferences and key
-    String SP_NAME = "mypref";
 
     public PublicStoryFragment() {
         // Required empty public constructor
@@ -49,23 +55,39 @@ public class PublicStoryFragment extends Fragment {
 
         RV_publicRev = myFragment.findViewById(R.id.rv_publicstory);
 
-        //get shared preferences
-        sp = getContext().getSharedPreferences(SP_NAME, MODE_PRIVATE);
+        noStoriesLabel = myFragment.findViewById(R.id.noStories);
 
-        //array list for display review
-        like_count = new ArrayList<>();
-        story_detail = new ArrayList<>();
-        username = new ArrayList<>();
-        story_date = new ArrayList<>();
+        listStory = new ArrayList<>();
+        database = FirebaseDatabase.getInstance().getReference("stories");
 
-        //harus di store dulu value nya ke array
-        //storeDataInArray();
-
-        adapter = new RVAdapter(getContext(),like_count, story_detail, story_date, username);
+        adapter = new RVAdapter(getContext(),listStory);
         RV_publicRev.setAdapter(adapter);
         RV_publicRev.setLayoutManager(new LinearLayoutManager(getContext()));
 
+
+
+        displayData();
+
         return myFragment;
+    }
+
+    void displayData(){
+        database.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull @NotNull DataSnapshot snapshot){
+                for (DataSnapshot dataSnapshot:snapshot.getChildren()){
+                    StoryHelperClass helper = dataSnapshot.getValue(StoryHelperClass.class);
+                    listStory.add(helper);
+                }
+                adapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(@NonNull @NotNull DatabaseError error) {
+
+            }
+        }
+        );
     }
 
     @Override

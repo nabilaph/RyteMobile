@@ -42,6 +42,7 @@ public class Login extends AppCompatActivity {
             String email = user.getEmail();
 
             Toast.makeText(Login.this, "Hello "+ email, Toast.LENGTH_SHORT) .show();
+            startActivity(new Intent(Login.this, Dashboard.class));
         }else{
             Toast.makeText(Login.this, "No Active user", Toast.LENGTH_SHORT) .show();
         }
@@ -80,7 +81,7 @@ public class Login extends AppCompatActivity {
                 String mail =  email.getEditText().getText().toString().trim();
                 String password =  pass.getEditText().getText().toString().trim();
 
-                if(!validateEmail() | !validatePassword()){
+                if(validateEmail() & validatePassword()){
                     mAuth.signInWithEmailAndPassword(mail, password)
                             .addOnCompleteListener(Login.this, new OnCompleteListener<AuthResult>() {
                                 @Override
