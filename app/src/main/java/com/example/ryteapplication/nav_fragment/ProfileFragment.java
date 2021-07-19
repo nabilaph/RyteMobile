@@ -10,6 +10,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +18,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.ryteapplication.HelperClass.StoryHelperClass;
 import com.example.ryteapplication.Login;
 import com.example.ryteapplication.R;
 import com.example.ryteapplication.UpdateProfile;
@@ -168,6 +170,9 @@ public class ProfileFragment extends Fragment {
 
     private void showInsight(FirebaseUser user){
         String userid = user.getUid();
+
+        countInsight(user);
+
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("insight");
         Query userData = ref.orderByChild(userid);
 
@@ -191,7 +196,7 @@ public class ProfileFragment extends Fragment {
     void countInsight(FirebaseUser user){
         String userid = user.getUid();
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("stories");
-        Query userData = ref.orderByChild(userid);
+        Query userData = ref.orderByChild("userid").equalTo(userid);
         //int likesTotal = 0;
 
         userData.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -201,10 +206,12 @@ public class ProfileFragment extends Fragment {
                 DatabaseReference insightRef = FirebaseDatabase.getInstance().getReference("insight");
                 insightRef.child(userid).child("storiesCount").setValue(storiesCount);
 
-                String keyStory = snapshot.getKey();
-                int likesCount = snapshot.child(keyStory).child("likesCount").getValue(Integer.class);
-                likesTotal = likesTotal + likesCount;
-                insightRef.child("likesCount").setValue(likesTotal);
+                int likes = 0;
+                for (DataSnapshot dataSnapshot:snapshot.getChildren()){
+                    likes = likes + dataSnapshot.child("likesCount").getValue(Integer.class);
+                    Log.i("infor aje", Integer.toString(dataSnapshot.child("likesCount").getValue(Integer.class)));
+                }
+                insightRef.child("likesCount").setValue(likes);
 
             }
 

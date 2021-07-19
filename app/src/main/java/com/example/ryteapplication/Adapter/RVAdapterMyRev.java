@@ -18,6 +18,7 @@ import com.example.ryteapplication.HelperClass.StoryHelperClass;
 import com.example.ryteapplication.R;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -42,7 +43,7 @@ public class RVAdapterMyRev extends RecyclerView.Adapter<RVAdapterMyRev.RVviewHo
 
     @Override
     public void onBindViewHolder(@NonNull final RVviewHolder holder, final int position) {
-
+        Collections.reverse(listStory);
         StoryHelperClass helper= listStory.get(position);
         //set text
         holder.txt_likeCount.setText(Integer.toString(helper.getLikesCount()));

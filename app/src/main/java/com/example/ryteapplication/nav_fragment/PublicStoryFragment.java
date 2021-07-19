@@ -20,11 +20,14 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -38,6 +41,7 @@ public class PublicStoryFragment extends Fragment {
     ArrayList <StoryHelperClass> listStory;
     DatabaseReference database;
     View myFragment;
+    private Boolean storyExist = false;
 
     public PublicStoryFragment() {
         // Required empty public constructor
@@ -64,9 +68,16 @@ public class PublicStoryFragment extends Fragment {
         RV_publicRev.setAdapter(adapter);
         RV_publicRev.setLayoutManager(new LinearLayoutManager(getContext()));
 
+        isStoryExist(database);
 
+        if(!storyExist){
+            noStoriesLabel.setVisibility(View.GONE);
+            displayData();
 
-        displayData();
+        }else{
+            noStoriesLabel.setVisibility(View.VISIBLE);
+            RV_publicRev.setVisibility(View.GONE);
+        }
 
         return myFragment;
     }
@@ -77,6 +88,7 @@ public class PublicStoryFragment extends Fragment {
             public void onDataChange(@NonNull @NotNull DataSnapshot snapshot){
                 for (DataSnapshot dataSnapshot:snapshot.getChildren()){
                     StoryHelperClass helper = dataSnapshot.getValue(StoryHelperClass.class);
+
                     listStory.add(helper);
                 }
                 adapter.notifyDataSetChanged();
@@ -88,6 +100,23 @@ public class PublicStoryFragment extends Fragment {
             }
         }
         );
+    }
+
+    void isStoryExist(DatabaseReference db){
+
+        db.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()){
+                    storyExist = true;
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
     }
 
     @Override

@@ -38,6 +38,8 @@ public class MyStoryFragment extends Fragment {
 
     TextView noStoriesLabel;
 
+    Boolean storyExist = false;
+
     ArrayList<StoryHelperClass> listStory;
 
     View myFragment;
@@ -71,7 +73,15 @@ public class MyStoryFragment extends Fragment {
         adapter = new RVAdapterMyRev(getContext(), listStory);
         RV_myRev.setAdapter(adapter);
         RV_myRev.setLayoutManager(new LinearLayoutManager(getContext()));
-        displayData(storyData);
+
+        if(!isStoryExist(storyData)){
+            noStoriesLabel.setVisibility(View.GONE);
+            displayData(storyData);
+
+        }else{
+            noStoriesLabel.setVisibility(View.VISIBLE);
+            RV_myRev.setVisibility(View.GONE);
+        }
 
         return myFragment;
     }
@@ -93,6 +103,25 @@ public class MyStoryFragment extends Fragment {
             }
         }
         );
+    }
+
+    Boolean isStoryExist(Query storyData){
+
+        storyData.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()){
+                    storyExist = true;
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+        return storyExist;
     }
 
     @Override

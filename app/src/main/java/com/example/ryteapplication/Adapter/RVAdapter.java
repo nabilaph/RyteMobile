@@ -14,6 +14,7 @@ import com.example.ryteapplication.HelperClass.StoryHelperClass;
 import com.example.ryteapplication.R;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 
 public class RVAdapter extends RecyclerView.Adapter<RVAdapter.RVviewHolder> {
@@ -25,6 +26,7 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.RVviewHolder> {
     public RVAdapter(Context context, ArrayList<StoryHelperClass> listStory) {
         this.context = context;
         this.listStory = listStory;
+
     }
 
     public class RVviewHolder extends RecyclerView.ViewHolder{
@@ -59,6 +61,8 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.RVviewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull final RVviewHolder holder, int position) {
+
+        Collections.reverse(listStory);
         StoryHelperClass helper= listStory.get(position);
         //set text
         holder.txt_likeCount.setText(Integer.toString(helper.getLikesCount()));

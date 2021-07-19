@@ -9,7 +9,7 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_mystory"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"/>
 
     <TextView
         android:id="@+id/noStories"
@@ -21,7 +21,6 @@
         android:textSize="18sp"
         android:background="@drawable/rv_shape"
         android:backgroundTint="#ffffff"
-        android:layout_margin="20dp"
         android:padding="20dp"
         />
 
