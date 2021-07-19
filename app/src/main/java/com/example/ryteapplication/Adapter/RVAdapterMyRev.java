@@ -16,6 +16,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.ryteapplication.HelperClass.StoryHelperClass;
 import com.example.ryteapplication.R;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -43,8 +45,9 @@ public class RVAdapterMyRev extends RecyclerView.Adapter<RVAdapterMyRev.RVviewHo
 
     @Override
     public void onBindViewHolder(@NonNull final RVviewHolder holder, final int position) {
-        Collections.reverse(listStory);
-        StoryHelperClass helper= listStory.get(position);
+          StoryHelperClass helper= listStory.get(position);
+
+
         //set text
         holder.txt_likeCount.setText(Integer.toString(helper.getLikesCount()));
         holder.txt_storyDate.setText(helper.getDate());
@@ -55,11 +58,6 @@ public class RVAdapterMyRev extends RecyclerView.Adapter<RVAdapterMyRev.RVviewHo
         holder.delete_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
-                //get review id from database
-//                final int id = dbHelper.getIdRev(product_name.get(position), product_category.get(position),
-//                        review_detail.get(position), username.get(position),  review_date.get(position));
-
-                // alert dialog for make sure are the user want to delete this review
                 AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
                 builder.setCancelable(false);
                 builder.setMessage("Are you sure to delete this review?");
@@ -74,11 +72,6 @@ public class RVAdapterMyRev extends RecyclerView.Adapter<RVAdapterMyRev.RVviewHo
                             //make toast for tell the user that post has been successful deleted
                             Toast.makeText(v.getContext(), "This post has been successfully deleted", Toast.LENGTH_SHORT).show();
 
-                            //remove data from array list
-                            //like_count.remove(position);
-                            //story_date.remove(position);
-//                            story_detail.remove(position);
-//                            username.remove(position);
                             notifyDataSetChanged();
                         }
                     }

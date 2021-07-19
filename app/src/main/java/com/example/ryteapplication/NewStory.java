@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -36,7 +37,7 @@ public class NewStory extends AppCompatActivity{
     //define variables
     Date currentDate;
 
-    String username;
+    public String username;
 
     private FirebaseAuth mAuth;
 
@@ -72,9 +73,9 @@ public class NewStory extends AppCompatActivity{
             public void onClick(View v) {
                 String storyContent = storyDet.getText().toString();
                 int Likes = 0;
-                getUsernamefromDB(currentUser);
+                //getUsernamefromDB(currentUser);
 
-                storeStorytoDB(formattedDate, Likes, storyContent, currentUser, username);
+                storeStorytoDB(formattedDate, Likes, storyContent, currentUser);
 
                 Toast.makeText(NewStory.this, "Story Posted", Toast.LENGTH_SHORT).show();
                 //after review has posted, it will go back to the page before
@@ -85,27 +86,37 @@ public class NewStory extends AppCompatActivity{
 
     }
 
-    void storeStorytoDB(String date, int likesCount, String storyContent, FirebaseUser user, String username){
+    void storeStorytoDB(String date, int likesCount, String storyContent, FirebaseUser user){
         String userid = user.getUid();
         FirebaseDatabase rootNode = FirebaseDatabase.getInstance();
         DatabaseReference reference = rootNode.getReference("stories");
 
-        //Create helperclass reference and store data using firebase
-        StoryHelperClass helper = new StoryHelperClass (date, likesCount, storyContent, userid, username);
-        reference.push().setValue(helper);
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("users").child(userid);
+        ref.child("username").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                String usernameFromDB = snapshot.getValue().toString();
+                StoryHelperClass helper = new StoryHelperClass (date, likesCount, storyContent, userid, usernameFromDB);
+                reference.push().setValue(helper);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
     }
 
     void getUsernamefromDB(FirebaseUser user) {
         String userid = user.getUid();
-        //final String[] username = new String[1];
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("users");
-        Query userData = ref.orderByChild(userid);
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("users").child(userid);
 
-        userData.addListenerForSingleValueEvent(new ValueEventListener() {
+        ref.child("username").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
-                String usernameFromDB = snapshot.child(userid).child("username").getValue(String.class);
-
+                String usernameFromDB = snapshot.getValue().toString();
+                Log.i("info aje", usernameFromDB);
                 username = usernameFromDB;
             }
 

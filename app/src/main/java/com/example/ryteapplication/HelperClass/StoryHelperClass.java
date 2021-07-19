@@ -2,6 +2,7 @@ package com.example.ryteapplication.HelperClass;
 
 public class StoryHelperClass {
 
+
     String date;
     int likesCount;
     String storyContent;

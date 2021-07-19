@@ -83,7 +83,7 @@ public class PublicStoryFragment extends Fragment {
     }
 
     void displayData(){
-        database.addValueEventListener(new ValueEventListener() {
+        database.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull @NotNull DataSnapshot snapshot){
                 for (DataSnapshot dataSnapshot:snapshot.getChildren()){
@@ -107,7 +107,7 @@ public class PublicStoryFragment extends Fragment {
         db.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.exists()){
+                if (snapshot.getValue() != null){
                     storyExist = true;
                 }
             }

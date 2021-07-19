@@ -62,8 +62,8 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.RVviewHolder> {
     @Override
     public void onBindViewHolder(@NonNull final RVviewHolder holder, int position) {
 
-        Collections.reverse(listStory);
         StoryHelperClass helper= listStory.get(position);
+
         //set text
         holder.txt_likeCount.setText(Integer.toString(helper.getLikesCount()));
         holder.txt_storyDate.setText(helper.getDate());

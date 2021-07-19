@@ -15,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.ryteapplication.HelperClass.StoryHelperClass;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -140,18 +141,37 @@ public class UpdateProfile extends AppCompatActivity {
         ref.child(userid).child("fullname").setValue(fullnameChanged);
         ref.child(userid).child("username").setValue(usernameChanged);
 
-        updateUsernameInStory(userid, usernameChanged);
+        DatabaseReference storyref = FirebaseDatabase.getInstance().getReference("stories");
+        Query userData = storyref.orderByChild("userid").equalTo(userid);
+
+        userData.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot dataSnapshot:snapshot.getChildren()){
+
+                    String keyStory = dataSnapshot.getKey();
+                    storyref.child(keyStory).child("username").setValue(usernameChanged);
+
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
     }
 
     private void updateUsernameInStory(String userid, String username){
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("stories");
         Query userData = ref.orderByChild("userid").equalTo(userid);
 
-        userData.addListenerForSingleValueEvent(new ValueEventListener() {
+        userData.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                String keyStory = snapshot.getKey();
-//                ref.child(keyStory).child("username").setValue(username);
+                String keyStory = snapshot.getKey();
+                ref.child(keyStory).child("username").setValue(username);
             }
 
             @Override

@@ -151,7 +151,6 @@ public class ProfileFragment extends Fragment {
                 String emailFromDB = snapshot.child(userid).child("email").getValue(String.class);
                 String fullnameFromDB = snapshot.child(userid).child("fullname").getValue(String.class);
                 String passwordFromDB = snapshot.child(userid).child("password").getValue(String.class);
-                String useridFromDB = snapshot.child(userid).child("userid").getValue(String.class);
                 String usernameFromDB = snapshot.child(userid).child("username").getValue(String.class);
 
                 fullname.getEditText().setText(fullnameFromDB);
@@ -209,9 +208,8 @@ public class ProfileFragment extends Fragment {
                 int likes = 0;
                 for (DataSnapshot dataSnapshot:snapshot.getChildren()){
                     likes = likes + dataSnapshot.child("likesCount").getValue(Integer.class);
-                    Log.i("infor aje", Integer.toString(dataSnapshot.child("likesCount").getValue(Integer.class)));
                 }
-                insightRef.child("likesCount").setValue(likes);
+                insightRef.child(userid).child("likesCount").setValue(likes);
 
             }
 

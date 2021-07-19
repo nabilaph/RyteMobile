@@ -10,10 +10,10 @@ public class UserHelperClass {
 
     public UserHelperClass(String email, String fullname, String password, String userid, String username) {
         this.fullname = fullname;
-        this.username = username;
         this.email = email;
         this.password = password;
         this.userid = userid;
+        this.username = username;
     }
 
     public UserHelperClass() {

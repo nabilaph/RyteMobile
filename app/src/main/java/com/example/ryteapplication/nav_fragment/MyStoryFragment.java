@@ -87,7 +87,7 @@ public class MyStoryFragment extends Fragment {
     }
 
     void displayData(Query storyData) {
-        storyData.addValueEventListener(new ValueEventListener() {
+        storyData.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
