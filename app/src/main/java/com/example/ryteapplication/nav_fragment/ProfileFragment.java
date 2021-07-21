@@ -57,13 +57,6 @@ public class ProfileFragment extends Fragment {
     //firebase
     private FirebaseAuth mAuth;
 
-    public void onStart() {
-        super.onStart();
-        // Check if user is signed in (non-null) and update UI accordingly.
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        //updateUI(currentUser);
-    }
-
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
@@ -148,6 +141,7 @@ public class ProfileFragment extends Fragment {
         userData.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+
                 String emailFromDB = snapshot.child(userid).child("email").getValue(String.class);
                 String fullnameFromDB = snapshot.child(userid).child("fullname").getValue(String.class);
                 String passwordFromDB = snapshot.child(userid).child("password").getValue(String.class);

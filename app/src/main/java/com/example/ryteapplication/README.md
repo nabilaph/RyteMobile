@@ -8,8 +8,8 @@ v 5. display profile details
 v 6. display public story
 v 7. display my story
 v 8. update profile
-9. like stories
-10. delete stories
+v 9. like stories
+v 10. delete stories
 v 11. add insight pas regis
 v 12. tampil insight di profile
 v 13. masukin nilai insight(jumlah likes & jumlah post)
@@ -19,7 +19,7 @@ UI
 v - my story tampilin no story pas gaada data
 v - public story tampilin no story pas gaada data
 - nambah profile pict? (kalo iya web juga)
-- login mau ada login with google ga (kalo iya web juga)
+- login mau ada login with google ga (kalo iya web jug a)
 - signup mau ada signup with google ga (kalo iya web juga)
 - public story mau ada gallery slider ga
 - my story mau ada gallery slider ga

@@ -6,12 +6,20 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.ryteapplication.HelperClass.StoryHelperClass;
 import com.example.ryteapplication.R;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -73,8 +81,21 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.RVviewHolder> {
         holder.like_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                DatabaseReference database = FirebaseDatabase.getInstance().getReference("stories").child(helper.getKey());
+                database.child("likesCount").addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
+                        int currentLikes = snapshot.getValue(Integer.class);
+                        database.child("likesCount").setValue(currentLikes+1);
+                        notifyItemChanged(position);
+                        Toast.makeText(v.getContext(), "You liked the post! Don't forget to love yourself more!", Toast.LENGTH_SHORT).show();
+                    }
 
+                    @Override
+                    public void onCancelled(@NonNull @NotNull DatabaseError error) {
 
+                    }
+                });
             }
         });
 

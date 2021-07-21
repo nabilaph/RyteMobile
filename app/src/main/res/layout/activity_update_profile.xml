@@ -38,31 +38,6 @@
             android:orientation="vertical"
             android:paddingHorizontal="20dp">
 
-            <ImageView
-                android:id="@+id/profilePic"
-                android:layout_width="120dp"
-                android:layout_height="120dp"
-                android:layout_marginTop="10dp"
-                android:background="@color/kGreyColor"
-                android:gravity="center"
-                android:src="@drawable/ic_pict">
-
-            </ImageView>
-
-            <Button
-                android:id="@+id/changePicBtn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:layout_marginBottom="10dp"
-                android:backgroundTint="@color/RDarkBlue"
-                android:fontFamily="@font/poppins_semibold"
-                android:text="Change Picture"
-                android:textAllCaps="false"
-                android:textSize="12sp"
-                android:textColor="@color/RCream"/>
-
-
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/fullname"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"

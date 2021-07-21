@@ -31,7 +31,7 @@
                     android:layout_height="wrap_content"
                     android:background="@color/RSunColor"
                     android:orientation="vertical"
-                    android:paddingHorizontal="15dp"
+                    android:paddingHorizontal="25dp"
                     android:paddingVertical="30dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -48,7 +48,7 @@
 
                     <TextView
                         android:id="@+id/bigFullname"
-                        android:layout_width="150dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/poppins_semibold"
                         android:text="Full Name"
@@ -57,20 +57,6 @@
 
 
                 </LinearLayout>
-
-                <ImageView
-                    android:id="@+id/profilePic"
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
-                    android:background="@color/kGreyColor"
-                    android:gravity="center"
-                    android:src="@drawable/ic_pict"
-                    android:layout_marginRight="20dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
-
-                </ImageView>
 
 
             </androidx.constraintlayout.widget.ConstraintLayout>

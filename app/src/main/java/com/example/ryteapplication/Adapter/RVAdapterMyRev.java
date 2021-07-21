@@ -16,8 +16,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.ryteapplication.HelperClass.StoryHelperClass;
 import com.example.ryteapplication.R;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -45,8 +50,8 @@ public class RVAdapterMyRev extends RecyclerView.Adapter<RVAdapterMyRev.RVviewHo
 
     @Override
     public void onBindViewHolder(@NonNull final RVviewHolder holder, final int position) {
-          StoryHelperClass helper= listStory.get(position);
 
+        StoryHelperClass helper= listStory.get(position);
 
         //set text
         holder.txt_likeCount.setText(Integer.toString(helper.getLikesCount()));
@@ -57,23 +62,24 @@ public class RVAdapterMyRev extends RecyclerView.Adapter<RVAdapterMyRev.RVviewHo
         // set on click listener for delete button
         holder.delete_btn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(final View v) {
+            public void onClick(View v) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
                 builder.setCancelable(false);
                 builder.setMessage("Are you sure to delete this review?");
                 builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        FirebaseDatabase db = FirebaseDatabase.getInstance();
+                        DatabaseReference ref = db.getReference("stories");
+                        ref.child(helper.getKey()).removeValue()
+                                .addOnSuccessListener(suc->{
+                                    Toast.makeText(v.getContext(), "This post has been successfully deleted", Toast.LENGTH_SHORT).show();
+                                    notifyItemRemoved(position);
+                                    listStory.remove(helper);
 
-                        //delete review by id
-                        boolean res = true;
-                        if (res){
-
-                            //make toast for tell the user that post has been successful deleted
-                            Toast.makeText(v.getContext(), "This post has been successfully deleted", Toast.LENGTH_SHORT).show();
-
-                            notifyDataSetChanged();
-                        }
+                                }).addOnFailureListener(error->{
+                            Toast.makeText(v.getContext(), "This post has been failed delete", Toast.LENGTH_SHORT).show();
+                        });
                     }
                 });
                 builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -85,13 +91,28 @@ public class RVAdapterMyRev extends RecyclerView.Adapter<RVAdapterMyRev.RVviewHo
                 AlertDialog alert = builder.create();
                 alert.show();
             }
+
         });
 
         //set on click listener edit button
         holder.like_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                DatabaseReference database = FirebaseDatabase.getInstance().getReference("stories").child(helper.getKey());
+                database.child("likesCount").addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
+                        int currentLikes = snapshot.getValue(Integer.class);
+                        database.child("likesCount").setValue(currentLikes+1);
+                        notifyItemChanged(position);
+                        Toast.makeText(v.getContext(), "You liked the post! Don't forget to love yourself more!", Toast.LENGTH_SHORT).show();
+                    }
 
+                    @Override
+                    public void onCancelled(@NonNull @NotNull DatabaseError error) {
+
+                    }
+                });
             }
         });
     }
@@ -118,6 +139,8 @@ public class RVAdapterMyRev extends RecyclerView.Adapter<RVAdapterMyRev.RVviewHo
 
             like_btn = itemView.findViewById(R.id.like_btn);
             delete_btn = itemView.findViewById(R.id.delete_btn);
+
+            //Collections.reverse(listStory);
 
         }
 

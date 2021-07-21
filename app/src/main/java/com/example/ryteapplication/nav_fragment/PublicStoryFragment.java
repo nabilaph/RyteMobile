@@ -61,6 +61,7 @@ public class PublicStoryFragment extends Fragment {
 
         noStoriesLabel = myFragment.findViewById(R.id.noStories);
 
+
         listStory = new ArrayList<>();
         database = FirebaseDatabase.getInstance().getReference("stories");
 
@@ -68,28 +69,36 @@ public class PublicStoryFragment extends Fragment {
         RV_publicRev.setAdapter(adapter);
         RV_publicRev.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        isStoryExist(database);
+        //isStoryExist(database);
+        displayData();
 
-        if(!storyExist){
-            noStoriesLabel.setVisibility(View.GONE);
-            displayData();
-
-        }else{
-            noStoriesLabel.setVisibility(View.VISIBLE);
-            RV_publicRev.setVisibility(View.GONE);
-        }
+//        if(listStory.isEmpty()){
+//            noStoriesLabel.setVisibility(View.GONE);
+//
+//
+//        }else{
+//            noStoriesLabel.setVisibility(View.VISIBLE);
+//            RV_publicRev.setVisibility(View.GONE);
+//        }
 
         return myFragment;
     }
 
     void displayData(){
+        listStory.clear();
         database.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull @NotNull DataSnapshot snapshot){
-                for (DataSnapshot dataSnapshot:snapshot.getChildren()){
-                    StoryHelperClass helper = dataSnapshot.getValue(StoryHelperClass.class);
-
-                    listStory.add(helper);
+                if (snapshot.hasChildren()){
+                    for (DataSnapshot dataSnapshot:snapshot.getChildren()){
+                        StoryHelperClass helper = dataSnapshot.getValue(StoryHelperClass.class);
+                        helper.setKey(dataSnapshot.getKey());
+                        listStory.add(helper);
+                        noStoriesLabel.setVisibility(View.GONE);
+                    }
+                }else {
+                    noStoriesLabel.setVisibility(View.VISIBLE);
+                    RV_publicRev.setVisibility(View.GONE);
                 }
                 adapter.notifyDataSetChanged();
             }

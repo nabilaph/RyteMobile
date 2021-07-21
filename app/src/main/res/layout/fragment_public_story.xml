@@ -22,6 +22,7 @@
         android:background="@drawable/rv_shape"
         android:backgroundTint="#ffffff"
         android:padding="20dp"
+        android:layout_margin="20dp"
         />
 
 </FrameLayout>

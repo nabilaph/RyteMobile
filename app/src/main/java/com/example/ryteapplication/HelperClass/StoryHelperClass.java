@@ -1,8 +1,11 @@
 package com.example.ryteapplication.HelperClass;
 
+import com.google.firebase.database.Exclude;
+
 public class StoryHelperClass {
 
-
+    @Exclude
+    String key;
     String date;
     int likesCount;
     String storyContent;
@@ -18,6 +21,14 @@ public class StoryHelperClass {
         this.storyContent = storyContent;
         this.userid = userid;
         this.username = username;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
     }
 
     public String getDate() {

@@ -66,6 +66,7 @@ public class MyStoryFragment extends Fragment {
 
         noStoriesLabel = myFragment.findViewById(R.id.noStories);
 
+
         listStory = new ArrayList<>();
         database = FirebaseDatabase.getInstance().getReference("stories");
         Query storyData = database.orderByChild("userid").equalTo(currentUser.getUid());
@@ -74,25 +75,35 @@ public class MyStoryFragment extends Fragment {
         RV_myRev.setAdapter(adapter);
         RV_myRev.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        if(!isStoryExist(storyData)){
-            noStoriesLabel.setVisibility(View.GONE);
-            displayData(storyData);
+        displayData(storyData);
 
-        }else{
-            noStoriesLabel.setVisibility(View.VISIBLE);
-            RV_myRev.setVisibility(View.GONE);
-        }
+//        if(listStory.isEmpty()){
+//            noStoriesLabel.setVisibility(View.GONE);
+//
+//
+//        }else{
+//            noStoriesLabel.setVisibility(View.VISIBLE);
+//            RV_myRev.setVisibility(View.GONE);
+//        }
 
         return myFragment;
     }
 
     void displayData(Query storyData) {
+        listStory.clear();
         storyData.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
-                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                    StoryHelperClass helper = dataSnapshot.getValue(StoryHelperClass.class);
-                    listStory.add(helper);
+                if(snapshot.hasChildren()){
+                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                        StoryHelperClass helper = dataSnapshot.getValue(StoryHelperClass.class);
+                        helper.setKey(dataSnapshot.getKey());
+                        listStory.add(helper);
+                        noStoriesLabel.setVisibility(View.GONE);
+                    }
+                }else{
+                    noStoriesLabel.setVisibility(View.VISIBLE);
+                    RV_myRev.setVisibility(View.GONE);
                 }
                 adapter.notifyDataSetChanged();
             }
