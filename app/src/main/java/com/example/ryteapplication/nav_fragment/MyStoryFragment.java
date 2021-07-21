@@ -28,6 +28,7 @@ import com.google.firebase.database.ValueEventListener;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -37,8 +38,6 @@ public class MyStoryFragment extends Fragment {
     RVAdapterMyRev adapter;
 
     TextView noStoriesLabel;
-
-    Boolean storyExist = false;
 
     ArrayList<StoryHelperClass> listStory;
 
@@ -71,41 +70,34 @@ public class MyStoryFragment extends Fragment {
         database = FirebaseDatabase.getInstance().getReference("stories");
         Query storyData = database.orderByChild("userid").equalTo(currentUser.getUid());
 
-        adapter = new RVAdapterMyRev(getContext(), listStory);
-        RV_myRev.setAdapter(adapter);
-        RV_myRev.setLayoutManager(new LinearLayoutManager(getContext()));
-
         displayData(storyData);
-
-//        if(listStory.isEmpty()){
-//            noStoriesLabel.setVisibility(View.GONE);
-//
-//
-//        }else{
-//            noStoriesLabel.setVisibility(View.VISIBLE);
-//            RV_myRev.setVisibility(View.GONE);
-//        }
 
         return myFragment;
     }
 
     void displayData(Query storyData) {
-        listStory.clear();
-        storyData.addListenerForSingleValueEvent(new ValueEventListener() {
+
+        storyData.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
                 if(snapshot.hasChildren()){
+                    listStory.clear();
                     for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                         StoryHelperClass helper = dataSnapshot.getValue(StoryHelperClass.class);
                         helper.setKey(dataSnapshot.getKey());
                         listStory.add(helper);
+                        Collections.reverse(listStory);
+                        adapter = new RVAdapterMyRev(getContext(), listStory);
+                        adapter.notifyDataSetChanged();
+                        RV_myRev.setAdapter(adapter);
+                        RV_myRev.setLayoutManager(new LinearLayoutManager(getContext()));
                         noStoriesLabel.setVisibility(View.GONE);
                     }
                 }else{
                     noStoriesLabel.setVisibility(View.VISIBLE);
                     RV_myRev.setVisibility(View.GONE);
                 }
-                adapter.notifyDataSetChanged();
+
             }
 
             @Override
@@ -116,24 +108,6 @@ public class MyStoryFragment extends Fragment {
         );
     }
 
-    Boolean isStoryExist(Query storyData){
-
-        storyData.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.exists()){
-                    storyExist = true;
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-
-        return storyExist;
-    }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {

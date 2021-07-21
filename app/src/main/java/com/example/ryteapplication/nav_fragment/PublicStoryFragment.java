@@ -37,11 +37,9 @@ public class PublicStoryFragment extends Fragment {
     RVAdapter adapter;
     TextView noStoriesLabel;
 
-    ArrayList<String> like_count, story_detail, story_date, username;
     ArrayList <StoryHelperClass> listStory;
     DatabaseReference database;
     View myFragment;
-    private Boolean storyExist = false;
 
     public PublicStoryFragment() {
         // Required empty public constructor
@@ -61,39 +59,32 @@ public class PublicStoryFragment extends Fragment {
 
         noStoriesLabel = myFragment.findViewById(R.id.noStories);
 
-
         listStory = new ArrayList<>();
         database = FirebaseDatabase.getInstance().getReference("stories");
 
-        adapter = new RVAdapter(getContext(),listStory);
-        RV_publicRev.setAdapter(adapter);
-        RV_publicRev.setLayoutManager(new LinearLayoutManager(getContext()));
-
-        //isStoryExist(database);
         displayData();
 
-//        if(listStory.isEmpty()){
-//            noStoriesLabel.setVisibility(View.GONE);
-//
-//
-//        }else{
-//            noStoriesLabel.setVisibility(View.VISIBLE);
-//            RV_publicRev.setVisibility(View.GONE);
-//        }
+
 
         return myFragment;
     }
 
     void displayData(){
-        listStory.clear();
-        database.addListenerForSingleValueEvent(new ValueEventListener() {
+
+        database.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull @NotNull DataSnapshot snapshot){
                 if (snapshot.hasChildren()){
+                    listStory.clear();
                     for (DataSnapshot dataSnapshot:snapshot.getChildren()){
                         StoryHelperClass helper = dataSnapshot.getValue(StoryHelperClass.class);
                         helper.setKey(dataSnapshot.getKey());
                         listStory.add(helper);
+                        Collections.reverse(listStory);
+                        adapter = new RVAdapter(getContext(),listStory);
+                        adapter.notifyDataSetChanged();
+                        RV_publicRev.setAdapter(adapter);
+                        RV_publicRev.setLayoutManager(new LinearLayoutManager(getContext()));
                         noStoriesLabel.setVisibility(View.GONE);
                     }
                 }else {
@@ -111,22 +102,6 @@ public class PublicStoryFragment extends Fragment {
         );
     }
 
-    void isStoryExist(DatabaseReference db){
-
-        db.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.getValue() != null){
-                    storyExist = true;
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-    }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {

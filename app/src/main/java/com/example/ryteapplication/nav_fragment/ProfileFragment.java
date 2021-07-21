@@ -2,7 +2,6 @@ package com.example.ryteapplication.nav_fragment;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -10,7 +9,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.ryteapplication.HelperClass.StoryHelperClass;
+import com.example.ryteapplication.HelperClass.UserHelperClass;
 import com.example.ryteapplication.Login;
 import com.example.ryteapplication.R;
 import com.example.ryteapplication.UpdateProfile;
@@ -34,8 +33,6 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
-import static android.content.Context.MODE_PRIVATE;
-
 public class ProfileFragment extends Fragment {
 
     // define variables
@@ -44,15 +41,12 @@ public class ProfileFragment extends Fragment {
     Button updateProfile, logOut;
     SwipeRefreshLayout swipeRefresh;
 
-    int likesTotal = 0;
 
     Context context;
     View myFragment;
 
-    SharedPreferences sp;
-
     //make array list for user data
-    ArrayList<String> userData = new ArrayList();
+    ArrayList<UserHelperClass> userData = new ArrayList();
 
     //firebase
     private FirebaseAuth mAuth;
@@ -97,6 +91,7 @@ public class ProfileFragment extends Fragment {
         bigFullname = myFragment.findViewById(R.id.bigFullname);
         likesCount = myFragment.findViewById(R.id.likesCount);
         storiesCount = myFragment.findViewById(R.id.storiesCount);
+        swipeRefresh = myFragment.findViewById(R.id.swipeRefresh);
 
         // find components by id according to the defined variable
         updateProfile = myFragment.findViewById(R.id.btn_update);
@@ -109,7 +104,6 @@ public class ProfileFragment extends Fragment {
         updateProfile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getContext(), "Profile Updated", Toast.LENGTH_SHORT).show();
                 Intent i = new Intent(context, UpdateProfile.class);
                 startActivity(i);
             }
@@ -135,17 +129,15 @@ public class ProfileFragment extends Fragment {
 
     private void showUserData(FirebaseUser user){
         String userid = user.getUid();
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("users");
-        Query userData = ref.orderByChild(userid);
-
-        userData.addListenerForSingleValueEvent(new ValueEventListener() {
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("users").child(userid);
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-                String emailFromDB = snapshot.child(userid).child("email").getValue(String.class);
-                String fullnameFromDB = snapshot.child(userid).child("fullname").getValue(String.class);
-                String passwordFromDB = snapshot.child(userid).child("password").getValue(String.class);
-                String usernameFromDB = snapshot.child(userid).child("username").getValue(String.class);
+                String emailFromDB = snapshot.child("email").getValue(String.class);
+                String fullnameFromDB = snapshot.child("fullname").getValue(String.class);
+                String passwordFromDB = snapshot.child("password").getValue(String.class);
+                String usernameFromDB = snapshot.child("username").getValue(String.class);
 
                 fullname.getEditText().setText(fullnameFromDB);
                 username.getEditText().setText(usernameFromDB);
@@ -156,7 +148,6 @@ public class ProfileFragment extends Fragment {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
             }
         });
     }
