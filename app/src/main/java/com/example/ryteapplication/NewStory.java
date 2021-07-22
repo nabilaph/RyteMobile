@@ -73,13 +73,19 @@ public class NewStory extends AppCompatActivity{
             public void onClick(View v) {
                 String storyContent = storyDet.getText().toString();
                 int Likes = 0;
-                //getUsernamefromDB(currentUser);
 
-                storeStorytoDB(formattedDate, Likes, storyContent, currentUser);
+                if(!storyContent.isEmpty()){
+                    storeStorytoDB(formattedDate, Likes, storyContent, currentUser);
 
-                Toast.makeText(NewStory.this, "Story Posted", Toast.LENGTH_SHORT).show();
-                //after review has posted, it will go back to the page before
-                finish();
+                    Toast.makeText(NewStory.this, "Story Posted", Toast.LENGTH_SHORT).show();
+                    //after review has posted, it will go back to the page before
+                    finish();
+                }else{
+                    Toast.makeText(NewStory.this, "You cannot post an empty story!", Toast.LENGTH_SHORT).show();
+                    storyDet.setError("This cannot be empty!");
+                }  
+
+
 
             }
         });

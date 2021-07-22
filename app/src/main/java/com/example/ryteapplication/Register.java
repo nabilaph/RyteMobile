@@ -44,7 +44,6 @@ public class Register extends AppCompatActivity {
         }else{
             Toast.makeText(Register.this, "No Active user", Toast.LENGTH_SHORT) .show();
         }
-        //updateUI(currentUser);
     }
 
     @Override
@@ -97,16 +96,14 @@ public class Register extends AppCompatActivity {
                                         //change page from register to login page
                                         Intent i = new Intent( Register.this, Login.class);
                                         startActivity(i);
-                                        //updateUI(user);
                                     } else {
                                         // If sign in fails, display a message to the user.
                                         Log.w(TAG, "createUserWithEmail:failure", task.getException());
                                         Toast.makeText(Register.this, "Authentication failed.",
                                                 Toast.LENGTH_SHORT).show();
-                                        //updateUI(null);
                                     }
 
-                                    // ...
+
                                 }
                             });
                 }
@@ -175,9 +172,9 @@ public class Register extends AppCompatActivity {
 
         if(val.isEmpty()){
             pass.setError("Field cannot be empty!");
-        }else if(val.length() >= 15){
+        }else if(val.length() > 15){
             pass.setError("Password cannot be more than 15 characters!");
-        }else if(val.length() <= 8){
+        }else if(val.length() < 8){
             pass.setError("Username cannot be less than 8 characters!");
         }else if(!val.matches(noWhiteSpace)){
             pass.setError("White space are not allowed!");

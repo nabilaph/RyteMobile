@@ -27,8 +27,6 @@ public class Login extends AppCompatActivity {
     // define variables
     Button register, login;
     TextInputLayout email, pass;
-    String SP_NAME = "mypref";
-    SharedPreferences sp;
 
     //firebase
     private FirebaseAuth mAuth;
@@ -46,15 +44,12 @@ public class Login extends AppCompatActivity {
         }else{
             Toast.makeText(Login.this, "No Active user", Toast.LENGTH_SHORT) .show();
         }
-        //updateUI(currentUser);
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
-        sp = getSharedPreferences(SP_NAME, MODE_PRIVATE);
 
         mAuth = FirebaseAuth.getInstance();
 
@@ -98,10 +93,8 @@ public class Login extends AppCompatActivity {
                                         Log.w(TAG, "signInWithEmail:failure", task.getException());
                                         Toast.makeText(Login.this, "Authentication failed.",
                                                 Toast.LENGTH_SHORT).show();
-                                        //updateUI(null);
                                     }
 
-                                    // ...
                                 }
                             });
                 }

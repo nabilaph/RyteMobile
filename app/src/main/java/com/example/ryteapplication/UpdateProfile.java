@@ -64,10 +64,14 @@ public class UpdateProfile extends AppCompatActivity {
         saveBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                updateProfileData(currentUser);
-                Toast.makeText(UpdateProfile.this, "Profile updated!", Toast.LENGTH_SHORT).show();
-                //after review has posted, it will go back to the page before
-                finish();
+
+                if(validateFullname() && validateUsername()){
+                    updateProfileData(currentUser);
+                    Toast.makeText(UpdateProfile.this, "Profile updated!", Toast.LENGTH_SHORT).show();
+                    //after review has posted, it will go back to the page before
+                    finish();
+                }
+
             }
         });
 
@@ -131,21 +135,38 @@ public class UpdateProfile extends AppCompatActivity {
         });
     }
 
-    private void updateUsernameInStory(String userid, String username){
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("stories");
-        Query userData = ref.orderByChild("userid").equalTo(userid);
+    private Boolean validateUsername(){
+        String val = username.getEditText().getText().toString();
+        String noWhiteSpace = "\\A\\w{4,20}\\z";
+        Boolean boolVal = false;
 
-        userData.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                String keyStory = snapshot.getKey();
-                ref.child(keyStory).child("username").setValue(username);
-            }
+        if(val.isEmpty()){
+            username.setError("Field cannot be empty!");
+        }else if(val.length() >= 15){
+            username.setError("Username too long!");
+        }else if(!val.matches(noWhiteSpace)){
+            username.setError("White space are not allowed!");
+        }else{
+            username.setError(null);
+            username.setErrorEnabled(false);
+            boolVal = true;
+        }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
+        return boolVal;
+    }
 
-            }
-        });
+    private Boolean validateFullname(){
+        String val = fullname.getEditText().getText().toString();
+        Boolean boolVal = false;
+
+        if(val.isEmpty()){
+            fullname.setError("Field cannot be empty!");
+        }else{
+            fullname.setError(null);
+            fullname.setErrorEnabled(false);
+            boolVal = true;
+        }
+
+        return boolVal;
     }
 }

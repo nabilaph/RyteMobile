@@ -62,9 +62,11 @@ public class PublicStoryFragment extends Fragment {
         listStory = new ArrayList<>();
         database = FirebaseDatabase.getInstance().getReference("stories");
 
+        adapter = new RVAdapter(getContext(),listStory);
+        RV_publicRev.setAdapter(adapter);
+        RV_publicRev.setLayoutManager(new LinearLayoutManager(getContext()));
+
         displayData();
-
-
 
         return myFragment;
     }
@@ -75,22 +77,20 @@ public class PublicStoryFragment extends Fragment {
             @Override
             public void onDataChange(@NonNull @NotNull DataSnapshot snapshot){
                 if (snapshot.hasChildren()){
+                    noStoriesLabel.setVisibility(View.GONE);
+                    RV_publicRev.setVisibility(View.VISIBLE);
                     listStory.clear();
                     for (DataSnapshot dataSnapshot:snapshot.getChildren()){
                         StoryHelperClass helper = dataSnapshot.getValue(StoryHelperClass.class);
                         helper.setKey(dataSnapshot.getKey());
                         listStory.add(helper);
-                        Collections.reverse(listStory);
-                        adapter = new RVAdapter(getContext(),listStory);
-                        adapter.notifyDataSetChanged();
-                        RV_publicRev.setAdapter(adapter);
-                        RV_publicRev.setLayoutManager(new LinearLayoutManager(getContext()));
-                        noStoriesLabel.setVisibility(View.GONE);
+
                     }
                 }else {
                     noStoriesLabel.setVisibility(View.VISIBLE);
                     RV_publicRev.setVisibility(View.GONE);
                 }
+                Collections.reverse(listStory);
                 adapter.notifyDataSetChanged();
             }
 

@@ -70,6 +70,10 @@ public class MyStoryFragment extends Fragment {
         database = FirebaseDatabase.getInstance().getReference("stories");
         Query storyData = database.orderByChild("userid").equalTo(currentUser.getUid());
 
+        adapter = new RVAdapterMyRev(getContext(), listStory);
+        RV_myRev.setAdapter(adapter);
+        RV_myRev.setLayoutManager(new LinearLayoutManager(getContext()));
+
         displayData(storyData);
 
         return myFragment;
@@ -81,23 +85,22 @@ public class MyStoryFragment extends Fragment {
             @Override
             public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
                 if(snapshot.hasChildren()){
+                    RV_myRev.setVisibility(View.VISIBLE);
+                    noStoriesLabel.setVisibility(View.GONE);
                     listStory.clear();
                     for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                         StoryHelperClass helper = dataSnapshot.getValue(StoryHelperClass.class);
                         helper.setKey(dataSnapshot.getKey());
                         listStory.add(helper);
-                        Collections.reverse(listStory);
-                        adapter = new RVAdapterMyRev(getContext(), listStory);
-                        adapter.notifyDataSetChanged();
-                        RV_myRev.setAdapter(adapter);
-                        RV_myRev.setLayoutManager(new LinearLayoutManager(getContext()));
-                        noStoriesLabel.setVisibility(View.GONE);
+
+
                     }
                 }else{
                     noStoriesLabel.setVisibility(View.VISIBLE);
                     RV_myRev.setVisibility(View.GONE);
                 }
-
+                Collections.reverse(listStory);
+                adapter.notifyDataSetChanged();
             }
 
             @Override
